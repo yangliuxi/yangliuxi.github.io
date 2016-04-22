@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> css元素及盒模型（一） · Hexo</title><meta name="description" content="css元素及盒模型（一） - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">css元素及盒模型（一）</h1><div class="post-time">Dec 11, 2015</div><div class="post-content"><p>CSS中，每个元素会产生一个或者多个矩形盒，称为元素盒。元素盒的中心区域是内容区域，由内向外依次被padding，border,margin区域包裹。这些包裹的区域都可以设置为0，其中只有margin能设负值。<br>内容区域的背景，默认是延伸至border边界下面。这可以在border样式设置为虚线时清楚的看到。border的颜色在没有设置的情况下，默认为元素内容的颜色。</p>
+<a id="more"></a>
+<h4 id="元素分类及不同盒模型"><a href="#元素分类及不同盒模型" class="headerlink" title="元素分类及不同盒模型"></a>元素分类及不同盒模型</h4><h6 id="Nonreplaced-element-非置换元素"><a href="#Nonreplaced-element-非置换元素" class="headerlink" title="Nonreplaced element 非置换元素"></a>Nonreplaced element 非置换元素</h6><p>内容包含在文档中的元素。如p元素，内容包含在元素中。</p>
+<h6 id="Replaced-element-置换元素"><a href="#Replaced-element-置换元素" class="headerlink" title="Replaced element 置换元素"></a>Replaced element 置换元素</h6><p>作为一个内容不被包含在文档中的占位符。如img元素，指向一个image文件，这个外部文件插入img元素所在位置。其他置换元素还有input,button等等。</p>
+<h6 id="Root-element-根元素"><a href="#Root-element-根元素" class="headerlink" title="Root element 根元素"></a>Root element 根元素</h6><p>文档树顶端的元素。一般是html元素。</p>
+<h6 id="Block-element-块元素"><a href="#Block-element-块元素" class="headerlink" title="Block element 块元素"></a>Block element 块元素</h6><h6 id="Block-box-块盒"><a href="#Block-box-块盒" class="headerlink" title="Block box 块盒"></a>Block box 块盒</h6><p>块级元素产生的盒子，如div、p等。任何元素都可以通过设置display:block来产生块盒。</p>
+<h6 id="Inline-box-行内盒"><a href="#Inline-box-行内盒" class="headerlink" title="Inline box 行内盒"></a>Inline box 行内盒</h6><p>strong、span等产生的盒子。任何元素都可以通过设置display:inline来产生行内盒。</p>
+<h6 id="Inline-block-box-行内块盒"><a href="#Inline-block-box-行内块盒" class="headerlink" title="Inline-block box 行内块盒"></a>Inline-block box 行内块盒</h6><p>简单的说就是不换行的块盒。</p>
+<h6 id="containing-block"><a href="#containing-block" class="headerlink" title="containing block"></a>containing block</h6><p>元素盒的定位环境。通常情况下是产生list item或者块盒的最近祖先元素的内容区域。</p>
+<pre><code>&lt;body&gt;
+    &lt;div&gt;
+        &lt;p&gt;This is a paragraph.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+p的包含块为div,div的包含块为body,body的包含块为html元素，html元素产生的盒为initial containing block原始包含块。有点特殊的地方是它的尺寸大小不是由根元素的内容区域决定的，而是viewport浏览
+器窗口大小决定。
+</code></pre><p>需要注意的是，任何元素可以通过display属性来产生不同的盒模型，不代表能使得元素类型发生改变。<br>常用元素的类型</p>
+<table><br>   <tr><br>      <td>Element </td><br>      <td>Type </td><br>      <td>Subtype </td><br>      <td>Notes</td><br>   </tr><br>   <tr><br>      <td>a </td><br>      <td>inline </td><br>      <td>special </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>abbr </td><br>      <td>inline </td><br>      <td>phrase </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>acronym </td><br>      <td>inline </td><br>      <td>phrase </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>address </td><br>      <td>block </td><br>      <td>  </td><br>      <td>Behaves similarly to p in common practice</td><br>   </tr><br>   <tr><br>      <td>blockquote </td><br>      <td>block </td><br>      <td>  </td><br>      <td>Must contain at least one block element when the declared !DOCTYPE is Strict</td><br>   </tr><br>   <tr><br>      <td>body </td><br>      <td>  </td><br>      <td>  </td><br>      <td>Encloses the entire document canvas; commonly takes on a margin (in IE, Firefox, and Safari) or padding (in Opera) of 10px in screen media</td><br>   </tr><br>   <tr><br>      <td>cite </td><br>      <td>inline </td><br>      <td>phrase </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>div </td><br>      <td>block </td><br>      <td>  </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>em </td><br>      <td>inline </td><br>      <td>phrase </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>fieldset </td><br>      <td>block </td><br>      <td>  </td><br>      <td>Commonly rendered by default with border: 1px black;</td><br>   </tr><br>   <tr><br>      <td>form </td><br>      <td>block </td><br>      <td>  </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>h1 … h6 </td><br>      <td>block </td><br>      <td>heading </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>input </td><br>      <td>inline </td><br>      <td>formctrl </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>img </td><br>      <td>inline </td><br>      <td>special </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>label </td><br>      <td>inline </td><br>      <td>formctrl </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>li </td><br>      <td>block </td><br>      <td>  </td><br>      <td>Element type not specified in Document Type Definition, but this element may contain either block or inline elements; the complete CSS 2.1 Recommendation sets aside a display value for list items</td><br>   </tr><br>   <tr><br>      <td>ol </td><br>      <td>block </td><br>      <td>list </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>p </td><br>      <td>block </td><br>      <td>  </td><br>      <td>May only contain inline elements; commonly rendered with top and bottom margins</td><br>   </tr><br>   <tr><br>      <td>span </td><br>      <td>inline </td><br>      <td>special </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>strong </td><br>      <td>inline </td><br>      <td>phrase </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>table </td><br>      <td>block </td><br>      <td>  </td><br>      <td> </td><br>   </tr><br>   <tr><br>      <td>ul </td><br>      <td>block </td><br>      <td>list </td><br>      <td>  </td><br>   </tr><br></table>
+
+
+<h4 id="元素水平定位原理"><a href="#元素水平定位原理" class="headerlink" title="元素水平定位原理"></a>元素水平定位原理</h4><h6 id="非置换元素"><a href="#非置换元素" class="headerlink" title="非置换元素"></a>非置换元素</h6><p>默认情况下元素的width为内容区域的宽度。一个块盒水平的七属性的和等于包含块内容区域。七属性分别为：margin-left,border-left,padding-left,width,padding-right,border-right,and margin-right<br>水平七属性中只有width,margin-left,margin-right能设置auto值。auto值的确定由包含块width值和七属性值已确定值的和的差值决定。比如</p>
+<pre><code>div {width: 500px;}
+p {margin-left: auto; margin-right: 100px;width: 100px;} /* &apos;auto&apos; left margin evaluates to 300px */
+</code></pre><p>如果都是设置的确定值，而和与包含块width不相等时，那么margin-right被强制为auto</p>
+<pre><code>div {width: 500px;}
+p {margin-left: 100px; margin-right: 100px;width: 100px;} /* right margin forced to be 300px */
+</code></pre><p>其他情况：</p>
+<pre><code>div {width: 500px;}
+p {width: 300px; margin-left: auto; margin-right: auto;} /* each margin is 100 pixels wide, because (500-300)/2 = 100 */
+
+div {width: 500px;}
+p {margin-left: auto; margin-right: 100px;width: auto;} /* left margin evaluates to 0; width becomes 400px */
+</code></pre><p>当margin值为负数时：</p>
+<pre><code>div {width: 500px; border: 3px solid black;}
+p.wide {margin-left: 10px; width: auto; margin-right: -50px; }
+10px + 0 + 0 + 540px + 0 + 0 - 50px = 500px  /* 计算出width值为540px*/因此超出包含块边界区域
+</code></pre><p>百分数值</p>
+<pre><code>&lt;p style=&quot;width: 67%; padding-right: 5%; padding-left: 5%; margin-right: auto;
+</code></pre><p>margin-left: 5%;”&gt;playing percentages</p> /<em> 18% (100% - 67% - 5% - 5% - 5%)</em>/<p></p>
+<h6 id="置换元素"><a href="#置换元素" class="headerlink" title="置换元素"></a>置换元素</h6><p>与非置换元素不同的一点就是：如果width设置为auto，那么宽度等于置换元素本来的宽度，当设置宽度的具体值时，高度与宽度始终维持同一比例，除非也手动设置了高度的具体值。</p>
+<h4 id="元素垂直定位原理"><a href="#元素垂直定位原理" class="headerlink" title="元素垂直定位原理"></a>元素垂直定位原理</h4><p>一个元素的内容决定了元素的默认高度。如果内容高度超出了高度设定值，可以通过overflow属性来控制内容的显示与否。在CSS2以后，非置换元素的高度值不能省略，必须设置为auto或者其他具体的非负值，除了使用百分比的特定情况。<br>与水平元素的定位一样，一个块盒垂直的七属性的和等于包含块内容区域的高度。有趣的是，如果margin-top或者margin-bottom设置为auto那么都自动变为0,也就不能很容易的垂直定为一个块盒了。</p>
+<pre><code>&lt;div style=&quot;height: 6em;&quot;&gt;
+    &lt;p style=&quot;height: 50%;&quot;&gt;Half as tall&lt;/p&gt;
+&lt;/div&gt;
+/* p的高度将为3em，如果要将P垂直剧中于div,那么必须设置margin-top与margin-bottom的值为25%，而不能像水平元素那样设置为auto，因为在垂直方向上margin值为auto的值为0*/
+</code></pre><p>如果父元素的高度设置为auto,那么子元素的百分比高度将被重置为auto,也就是p的高度和div的高度都等于内容的高度。</p>
+<pre><code>&lt;div style=&quot;height:auto&quot;&gt;
+    &lt;p style=&quot;height: 50%;&quot;&gt;NOT half as tall; height reset to auto&lt;/p&gt;
+&lt;/div&gt;
+</code></pre><h4 id="自动高度"><a href="#自动高度" class="headerlink" title="自动高度"></a>自动高度</h4><p>由上面的例子可以得出，当高度值设置为auto时，块盒的高度只要包裹行内元素的line box就可以了。后面会介绍line box的范围为行内所有元素inline-height的最小值到最大值的区域。就如p元素相对于它离开的行内元素。<br>如果块盒下只有块盒子元素，就如div相对于p元素，那么它默认的高度值为子元素border-box以内的内容。不包含margin区域。p元素的margin值会伸出div外，参与相邻元素margin塌陷值的计算。但是如果它有padding区域或者border区域，那么子元素的marigin值就包含进了div元素。</p>
+<pre><code>&lt;div style=&quot;height: auto;background: silver;&quot;&gt;
+    &lt;p style=&quot;margin-top: 2em; margin-bottom: 2em;&quot;&gt;A paragraph!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div style=&quot;height: auto; border-top: 1px solid; border-bottom: 1px solid;background: silver;&quot;&gt;
+    &lt;p style=&quot;margin-top: 2em; margin-bottom: 2em;&quot;&gt;Another paragraph!&lt;/p&gt;
+&lt;/div&gt;
+</code></pre><h4 id="margin塌陷"><a href="#margin塌陷" class="headerlink" title="margin塌陷"></a>margin塌陷</h4><p>因为CSS中存在一个margin collapse，即边界塌陷或者说边界重叠。对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。如果遇到上下两个并排内容块的安排，最好只设置其中每个块上或下margin的一处即可。</p>
+<pre><code>&lt;ul&gt;
+       &lt;li&gt; list1
+       &lt;li&gt; list2
+&lt;/ul&gt;
+&lt;h1&gt; heading
+ul {margin-bottom: 15px;background-color: grey;border: 1px solid;}
+li {margin-top: 10px; margin-bottom: 20px;}
+h1 {margin-top: 28px;}
+由上面可知，ul的高度是不包括list1的margin-top,和list2的margin-bottom;通过设置
+ul {margin-bottom: 15px; border: 1px solid;} margin值就包含在了ul的高度中。
+</code></pre><h4 id="负margin及塌陷"><a href="#负margin及塌陷" class="headerlink" title="负margin及塌陷"></a>负margin及塌陷</h4><p>对于上下两个并列的元素块，会取上下两者margin绝对值最大的margin值。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/12/12/css元素及其盒模型(二)/" class="prev">PREV</a><a href="/2015/12/04/逻辑运算符&amp;&amp;和||的另类应用/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

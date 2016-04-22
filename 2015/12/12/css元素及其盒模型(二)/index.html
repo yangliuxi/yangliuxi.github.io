@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> css元素及盒模型（二） · Hexo</title><meta name="description" content="css元素及盒模型（二） - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">css元素及盒模型（二）</h1><div class="post-time">Dec 12, 2015</div><div class="post-content"><p>上节大部分讲的是块元素，这小节讨论下行内元素。行内元素见到最多的就是行内非置换元素em、a<br>,行内置换元素img</p>
+<h4 id="行内元素的布局"><a href="#行内元素的布局" class="headerlink" title="行内元素的布局"></a>行内元素的布局</h4><h6 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h6><p>Anonymous text 匿名文本</p>
+<pre><code>&lt;p&gt; I&apos;m &lt;em&gt;so&lt;/em&gt; happy!&lt;/p&gt; 
+&apos;I’m&apos;和 &apos;happy!&apos;是匿名文本
+</code></pre><p>Content area内容区:高度由font-size决定</p>
+<a id="more"></a>
+<p><img src="/img/001.gif"></p>
+<p>Inline box 行内盒:高度由line-height决定</p>
+<p><img src="/img/line-box.gif"></p>
+<p>Leading: font-size和line-height的差值。差值的各一半被加到内容区的顶端和底端，组成行内盒。<br>Line box: Line box的边界为行内所有元素inline box的最大值和最小值之间的区域。</p>
+<p><img src="/img/line-bbox.gif"></p>
+<h4 id="常用概念"><a href="#常用概念" class="headerlink" title="常用概念"></a>常用概念</h4><p>行内元素的背景应用于内容区及padding区域<br>非置换元素的padding,borders和margin值对行内元素的垂直效果不起作用，它们不能改变inline-height值。<br>置换元素的Margins和borders值能改变该元素的inline box的高度，因此也能改变包含该元素的line box高度。<br>inline box是通过vertical-align属性垂直对齐于line box中。vertical-align属性值有：</p>
+<pre><code>top:元素inline-box的顶端与所包含的line box顶端对齐
+bottom:元素inline-box的底端与所包含的line box底端对齐
+text-top：将元素行内框的顶端同文本行的顶线对齐
+text-bottom：文本的底端对齐
+middle：中间对齐，通常使用在图片上，将图片的垂直方向的中线与文本行的中线对齐。
+super：上标显示
+sub：下标显示
+&lt;percentage&gt;：百分比和长度
+</code></pre><p>文本的基线、顶线、中线和底线，还有内容区、行内框和行框的相互关系：<br><img src="/img/01.gif"></p>
+<ol>
+<li>默认情况下行内元素的对齐方式为：基线对齐（vertical-align : baseline）<br><img src="/img/02.gif"></li>
+<li>顶端对齐（vertical-align : top）<br><img src="/img/03.gif"></li>
+<li>文本顶端对齐（vertical-align : text-top）<br><img src="/img/04.gif"></li>
+<li>底端对齐（vertical-align : bottom）<br><img src="/img/05.gif"></li>
+<li>文本底端对齐（vertical-align : text-bottom）<br><img src="/img/06.gif"></li>
+<li>中间对齐（vertical-align : middle）<br>中线的定义为：中线位于基线的上方，与基线的距离为小写字母x高度的一半（即0.5ex），而ex同font-size相关，大部分浏览器认为1ex = 0.5em（em同样也是相对单位，不是绝对单位），因此会将基线以上四分之一em处作为中线来对齐。<br><img src="/img/07.gif"></li>
+<li>上标和下标<br>上标（vertical-align:super）使元素的基线相对于基准元素的基线升高，下标（vertical-align:sub）使元素的基线降低，移动的幅度CSS规范中没有规定，由浏览器来决定。<br><img src="/img/08.gif"></li>
+<li>长度值和百分比<br>和上下标类似，长度值和百分比值可使元素的基线相对于基准元素的基线升高（正值）或者降低（负值）。上下标的移动尺寸是由浏览器确定的，而设定长度值或者百分比，可以精确控制文字上下移动的幅度。百分比与行高有关（line-height）<br><img src="/img/09.gif"></li>
+</ol>
+<p>行高的确定原则：<br>由前面Leading的定义，我们可知，改变一个元素的行高值能引起与相邻元素的重叠。如当行高小于字体大小的时候。<br>为避免这种情况出现，可采用以下几种方法避免。</p>
+<ol>
+<li><p>使用em单位，使得line-heigth的高度跟随元素本身font-size变化。</p>
+<p> p {line-height: 1em;}<br> big {font-size: 250%; line-height: 1em;}</p>
+</li>
+</ol>
+<p>2.设置缩放比例值</p>
+<pre><code>body {line-height: 1.5;} 1.5倍当前字体值
+</code></pre><h4 id="增加盒属性"><a href="#增加盒属性" class="headerlink" title="增加盒属性"></a>增加盒属性</h4><p>由前面讨论可知，padding, margins, 和 borders 可以应用于行内非置换元素. 但是不能改变行高值，也就不能改变行内元素的整体布局了。<br>如果你为行内元素设置border属性，那么border边界默认是元素的内容区域，也就是font-size控制区，而不是行高值区域，当你再设置padding值时，border会远离文本相应的值距离。但是文本的位置都不会变动，这和我们所说的理论不相冲突。</p>
+<pre><code>span {border: 1px solid black;}
+span {padding: 4px;border: 1px solid black;}
+</code></pre><p>效果分别如下：<br><img src="/img/pad.jpg"><br><img src="/img/pad1.jpg"></p>
+<h4 id="行内置换元素"><a href="#行内置换元素" class="headerlink" title="行内置换元素"></a>行内置换元素</h4><p>前面我们简单谈到过，置换元素的Margins和borders值能改变该元素的inline box的高度，因此也能改变包含该元素的line box高度。置换元素为什么也有自己的inline box的高度也就是行高值呢，因为，置换元素需要inline box来垂直定位自己，比如</p>
+<pre><code>p {font-size: 15px; line-height: 18px;}
+img {vertical-align: 50%;}
+&lt;p&gt;the image in this sentence &lt;img src=&quot;test.gif&quot; alt=&quot;test image&quot;&gt;will be raised 9 pixels.&lt;/p&gt;
+图片相对于基线提升9px
+</code></pre><h4 id="行内块元素"><a href="#行内块元素" class="headerlink" title="行内块元素"></a>行内块元素</h4><p>行内块元素在行内的布局就和行内置换元素一样。也就是说，行内块元素基于基线对齐。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/01/01/svg-viewbox（一）/" class="prev">PREV</a><a href="/2015/12/11/css元素及其盒模型(一)/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

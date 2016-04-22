@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> rem单位详解及应用 · Hexo</title><meta name="description" content="rem单位详解及应用 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">rem单位详解及应用</h1><div class="post-time">Mar 27, 2015</div><div class="post-content"><p>rem（font size of the root element）是指相对于根元素的字体大小的单位。<br>我们经常会看到rem值设置为62.5%，</p>
+<pre><code>html {font-size: 62.5%;}
+</code></pre><p>这是因为现在浏览器中的默认的字体大小都是16px，62.5%*16px=10px;所以1rem=10px;方便计算。但是这有一个bug,就是中文版的chrome支持的最小字体是12px,那么1rem最小值就是12px,而不是10px了。<br><a id="more"></a><br>可以从两个方面解决这个bug，<br>1.设置1rem=100px;</p>
+<pre><code>html {font-size: 625%;}
+</code></pre><p>2.采用绝对的px值设置。如</p>
+<pre><code>html {font-size:20px;}
+</code></pre><p>到这里肯定有很多人会问我怎么计算出不同分辨率下rem的值？<br>在移动端，随着iphone6和plus的加入，屏幕像素宽度有320，384，480，640，1080等，大有赶上电脑屏幕的趋势阿。我们可以通过JS去动态计算根元素的font-size，这样的好处是所有设备分辨率都能兼容适配。</p>
+<pre><code>(function (doc, win) {
+var docEl = doc.documentElement,
+    resizeEvt = &apos;orientationchange&apos; in window ? &apos;orientationchange&apos; : &apos;resize&apos;,
+    recalc = function () {
+                          var clientWidth = docEl.clientWidth;
+                          if (!clientWidth) return;
+                          docEl.style.fontSize = 20 * (clientWidth / 320) + &apos;px&apos;;
+                          };
+      if (!doc.addEventListener) return;
+      win.addEventListener(resizeEvt, recalc, false);
+      doc.addEventListener(&apos;DOMContentLoaded&apos;, recalc, false);
+    })(document, window);
+</code></pre></div></article></div></section><footer><div class="paginator"><a href="/2015/08/11/R常用命令解析/" class="prev">PREV</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

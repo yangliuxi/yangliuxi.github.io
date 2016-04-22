@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> js逻辑运算符&&和||的另类应用 · Hexo</title><meta name="description" content="js逻辑运算符&amp;&amp;和||的另类应用 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">js逻辑运算符&&和||的另类应用</h1><div class="post-time">Dec 4, 2015</div><div class="post-content"><p>逻辑运算符“&amp;&amp;”、“||”是对操作数进行布尔算术运算，我们经常碰到的是和关系运算符配合使用的情况。但是对真值和假值的布尔操作却了解不多。下面我们就从三个层次加深对逻辑运算符的理解。<br><a id="more"></a></p>
+<h4 id="1-连接两个关系表达式-操作数总是布尔值）"><a href="#1-连接两个关系表达式-操作数总是布尔值）" class="headerlink" title="1.连接两个关系表达式(操作数总是布尔值）"></a>1.连接两个关系表达式(操作数总是布尔值）</h4><p>关系运算符： “==”、“===”、“!==”、“!===”、“&lt;”、“&lt;=”、“&gt;”和“&gt;=”用于测试两个值之间的关系，关系表达式总是返回一个布尔值。</p>
+<pre><code>x == 1 &amp;&amp; y==2     //只有都为true的时候，结果才是true
+</code></pre><h4 id="2-连接真值或假值"><a href="#2-连接真值或假值" class="headerlink" title="2.连接真值或假值"></a>2.连接真值或假值</h4><pre><code>除了false、null、undefined、0、-0、NaN和&quot;&quot; 外，
+其他的值包括所有对象都是真值
+</code></pre><p>当“&amp;&amp;” 对真值进行布尔操作时，只有当两个操作数都是真值时，才返回一个真值。注意返回的是一个真值而不是true。否则，至少一个是假值时则返回假值。</p>
+<h4 id="3-返回的真值或假值是什么"><a href="#3-返回的真值或假值是什么" class="headerlink" title="3.返回的真值或假值是什么"></a>3.返回的真值或假值是什么</h4><p>进行“&amp;&amp;”操作时，运算符首先计算左操作数的值，如果是假值，那么就返回这个假值。如果是真值，那么表达式的结果就依赖于右操作数的值，如果右操作数为真值，那么结果就返回这个真值，如果是假值，就返回这个假值。也就是说，当左操作数是真值时，“&amp;&amp;”运算符将右操作数的值作为整个表达式的结果。</p>
+<p>我们可以利用后两点进行一些复杂表达式运算。</p>
+<pre><code>if(a&gt;5){
+    alert(&quot;yes&quot;);
+}
+等价于
+a&gt;5 &amp;&amp; alert(&quot;yes&quot;);
+</code></pre><p>来个复杂点的。下面是一个很常见的条件判断语句，我们经常用if…elseif…else语句，或者是switch语句</p>
+<pre><code>var b;
+if(a == 5){
+    b = 1;
+}
+else if(a == 10){
+    b = 2;
+}
+else if(a == 12){
+    b = 3;
+}
+else if(a == 15){
+    b = 4;
+}
+else {
+    b = 0;
+}
+等价于
+var b;
+switch(a){
+    case 5 : b = 1;
+break;
+    case 10 : b = 2;
+break;
+    case 12 : b = 3;
+break;
+    case 15 : b = 4;
+break;
+    default : b = 0;
+break;
+}
+</code></pre><p>学习了逻辑运算符的另类应用，我们可以简单的这么写</p>
+<pre><code>var b = (a == 5 &amp;&amp; 1) || (a == 10 &amp;&amp; 2) || (a == 12 &amp;&amp; 3) || (a == 15 &amp;&amp; 4) || 0;
+或者，更优化点代码，这么写
+var b={&apos;5&apos;:1,&apos;10&apos;:2,&apos;12&apos;:3,&apos;15&apos;:4}[a] || 0;
+</code></pre><p>因为对象的属性是一个具体的值，而不可能是一个范围，所以当我们遇到这种情况时,只能这么写了</p>
+<pre><code>var b = (a &gt; 15 &amp;&amp; 1) || (a &gt; 12 &amp;&amp; 2) || (a &gt; 10 &amp;&amp; 3) || (a &gt; 5 &amp;&amp; 4) || 0;
+</code></pre><h4 id="最后说下另外一个逻辑运算符-“-”"><a href="#最后说下另外一个逻辑运算符-“-”" class="headerlink" title="最后说下另外一个逻辑运算符 “!”"></a>最后说下另外一个逻辑运算符 “!”</h4><p>单独说“!”是因为它和“&amp;&amp;”与“||”不同，“!”运算符首先将操作数转换为布尔值，然后再对布尔值进行求反。因此“!”总是返回true或者false,并且，可以通过使用两次逻辑非运算来得到一个值的等价布尔值：!!x<br>这也是我们会经常发现if语句这么写的原因：if(!!x){…}</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/12/11/css元素及其盒模型(一)/" class="prev">PREV</a><a href="/2015/11/27/利用relative与absolute做照片墙/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

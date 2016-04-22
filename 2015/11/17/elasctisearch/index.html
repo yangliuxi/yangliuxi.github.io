@@ -1,0 +1,184 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> elasticsearch之数据导入 · Hexo</title><meta name="description" content="elasticsearch之数据导入 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">elasticsearch之数据导入</h1><div class="post-time">Nov 17, 2015</div><div class="post-content"><h4 id="数据批量导入"><a href="#数据批量导入" class="headerlink" title="数据批量导入"></a>数据批量导入</h4><p>通过bulk API可以批量导入新建的文档。格式由两个JSON格式的文档组成，每个文档由空行隔开，各占一行。第一个文档由操作类型如(index，index会覆盖已存在的相同ID的文档，如果不想覆盖则用create操作方法）和元数据组成,如(index,type,ID)；第二个文档则是要index文档的内容。文档代码示例如下：</p>
+<pre><code>{&quot;index&quot;:{&quot;_index&quot;:&quot;get-together&quot;, &quot;_type&quot;:&quot;group&quot;, &quot;_id&quot;:&quot;10&quot;}}
+{&quot;name&quot;:&quot;Elasticsearch Bucharest&quot;}
+{&quot;index&quot;:{&quot;_index&quot;:&quot;get-together&quot;, &quot;_type&quot;:&quot;group&quot;, &quot;_id&quot;:&quot;11&quot;}}
+{&quot;name&quot;:&quot;Big Data Bucharest&quot;}
+</code></pre><a id="more"></a>
+<p>然后在终端输入以下命令<br>REQUESTS_FILE=/tmp/test_bulk<br>curl -XPOST localhost:9200/_bulk –data-binary @$REQUESTS_FILE<br>我们也可以把index,type类型放入url中，这样就不必要在每个操作中都注明了。<br>curl -XPOST localhost:9200/get-together/group/_bulk –data-binary @$REQUESTS_FILE<br>此时批量导入的文档就可以简写成以下这样了。</p>
+<pre><code>{ &quot;index&quot;: {}}
+{&quot;name&quot;:&quot;Elasticsearch Bucharest&quot;}
+{ &quot;index&quot;: {}}
+{&quot;name&quot;:&quot;Big Data Bucharest&quot;}
+</code></pre><p>如何快速生成这种格式的数据，我个人方面使用的技巧就是使用linux sed命令处理文档。假如我们的文档如下：<br>{“BookNum”:1,”BookDescription”:”With”,”Publisher”:”The Pragmatic Programmers”,”By”:”Mike Clark”,”ISBN”:”978-0-9787-3922-5”,”Year”:”2008”,”Pages”:”464”},{“BookNum”:2,”BookDescription”:”With “,”Publisher”:”The Pragmatic Programmers”,”By”:”Mike Clark”,”ISBN”:”978-0-9787-3922-5”,”Year”:”2008”,”Pages”:”464”},{“BookNum”:3,”BookDescription”:”Rails “,”By”:[“Sam Ruby”,”Dave Thomas”,”David Heinemeier Hansson”],”ISBN”:”978-1-93435-616-6”,”Year”:”2009”,”Pages”:”792”}<br>通过简单的一个命令就可以生成上面那种格式了。-i 代表直接在当前目录的json文档上进行修改。</p>
+<pre><code>sed -i -e &apos;s/},{/}\n{ &quot;index&quot;: {}}\n{/g&apos; json文档
+</code></pre><h4 id="mappings的设置"><a href="#mappings的设置" class="headerlink" title="mappings的设置"></a>mappings的设置</h4><p>通过上面批量导入的文档，elasticsearch会自动探测文档字段的类型。我们可以通过以下命令查询当前文档mappings的设置</p>
+<pre><code>curl &apos;localhost:9200/get-together/group/_mapping?pretty&apos;
+</code></pre><p>但是有时候自动探测出的字段类型并不是我们想要的，因此在导入文档前，我们首先要设置好mapping值。我们可以通过在当前目录下建立mapping.json文档，然后通过从外部文件引入的方式在建立数据库的时候设置好mapping值以及其他的一些配置。</p>
+<pre><code>curl -s -XPOST &quot;localhost:9200/get-together&quot; -d@mapping.json
+mapping.json示例文档如下：这个示例文件通过settings和mappings两个设置几乎覆盖了elasticsearch的大部分内容点。以后再具体分析。
+{
+      &quot;settings&quot; : {
+            &quot;number_of_shards&quot; : 2,
+            &quot;number_of_replicas&quot; : 1,
+            &quot;index&quot;: {
+                  &quot;analysis&quot;: {
+                    &quot;analyzer&quot;: {
+                          &quot;myCustomAnalyzer&quot;: {
+                                &quot;type&quot;: &quot;custom&quot;,
+                                &quot;tokenizer&quot;: &quot;myCustomTokenizer&quot;,
+                                &quot;filter&quot;: [&quot;myCustomFilter1&quot;, &quot;myCustomFilter2&quot;],
+                                &quot;char_filter&quot;: [&quot;myCustomCharFilter&quot;]
+                          }
+                    },
+                    &quot;tokenizer&quot;: {
+                          &quot;myCustomTokenizer&quot;: {
+                                &quot;type&quot;: &quot;letter&quot;
+                          },
+                          &quot;myCustomNGramTokenizer&quot;: {
+                            &quot;type&quot; : &quot;ngram&quot;,
+                            &quot;min_gram&quot; : 2,
+                            &quot;max_gram&quot; : 3
+                          }
+
+                },
+                &quot;filter&quot;: {
+                      &quot;myCustomFilter1&quot;: {
+                            &quot;type&quot;: &quot;lowercase&quot;
+                      },
+                      &quot;myCustomFilter2&quot;: {
+                            &quot;type&quot;: &quot;kstem&quot;
+                      }
+                },
+                &quot;char_filter&quot;: {
+                      &quot;myCustomCharFilter&quot;: {
+                            &quot;type&quot;: &quot;mapping&quot;,
+                        &quot;mappings&quot;: [&quot;ph=&gt;f&quot;, &quot; u =&gt; you &quot;, &quot;ES=&gt;Elasticsearch&quot;]
+                      }
+                    }
+            }
+        }
+    },
+      &quot;mappings&quot; : {
+            &quot;group&quot; : {
+                  &quot;_source&quot; : {
+                    &quot;enabled&quot; : true
+                  },
+                  &quot;_all&quot; : {
+                    &quot;enabled&quot; : true
+                  },
+                  &quot;properties&quot; : {
+                    &quot;organizer&quot; : { &quot;type&quot; : &quot;string&quot; },
+                    &quot;name&quot; : { &quot;type&quot; : &quot;string&quot; },
+                    &quot;description&quot; : {
+                          &quot;type&quot; : &quot;string&quot;,
+                          &quot;term_vector&quot;: &quot;with_positions_offsets&quot;
+                    },
+                    &quot;created_on&quot; : {
+                          &quot;type&quot; : &quot;date&quot;,
+                          &quot;format&quot; : &quot;yyyy-MM-dd&quot;
+                    },
+                    &quot;tags&quot; : {
+                          &quot;type&quot; : &quot;string&quot;,
+                          &quot;index&quot; : &quot;analyzed&quot;,
+                          &quot;fields&quot;: {  
+                                &quot;verbatim&quot; : {
+                                      &quot;type&quot; : &quot;string&quot;,
+                                      &quot;index&quot; : &quot;not_analyzed&quot;
+                                }
+                          }
+                    },
+                    &quot;members&quot; : { &quot;type&quot; : &quot;string&quot; },
+                    &quot;location_group&quot; : { &quot;type&quot; : &quot;string&quot; }
+                  }
+            },
+            &quot;event&quot; : {
+                  &quot;_source&quot; : {
+                    &quot;enabled&quot; : true
+                  },
+                  &quot;_all&quot; : {
+                    &quot;enabled&quot; : false
+                  },
+                  &quot;_parent&quot; : {
+                    &quot;type&quot; : &quot;group&quot;
+                  },
+                  &quot;properties&quot; : {
+                    &quot;host&quot; : { &quot;type&quot; : &quot;string&quot; },
+                    &quot;title&quot; : { &quot;type&quot; : &quot;string&quot; },
+                    &quot;description&quot; : {
+                          &quot;type&quot; : &quot;string&quot;,
+                          &quot;term_vector&quot;: &quot;with_positions_offsets&quot;
+                    },
+                &quot;attendees&quot; : { &quot;type&quot; : &quot;string&quot; },
+                &quot;date&quot; : {
+                    &quot;type&quot; : &quot;date&quot;,
+                    &quot;format&quot; : &quot;date_hour_minute&quot;
+                },
+                &quot;reviews&quot; : {
+                    &quot;type&quot; : &quot;integer&quot;,
+                    &quot;null_value&quot; : 0
+                },
+                &quot;location_event&quot;: {
+                    &quot;type&quot; : &quot;object&quot;,
+                    &quot;properties&quot; : {
+                        &quot;name&quot; : { &quot;type&quot; : &quot;string&quot; },
+                        &quot;geolocation&quot; : { &quot;type&quot; : &quot;geo_point&quot; }
+                    }
+                    }
+                  }
+            }
+      }
+}
+</code></pre><p>也可以通过直接在终端配置mappings</p>
+<pre><code>curl -XPUT &apos;localhost:9200/get-together/_mapping/new-events&apos; -d &apos;{
+    &quot;new-events&quot; : {
+        &quot;properties&quot; : {
+            &quot;host&quot;: {
+                &quot;type&quot; : &quot;string&quot;
+            }
+        }
+    }
+}&apos;
+</code></pre><p>如果新建的数据库已存在，则会设置失败，先删掉原来的数据库再执行上面的命令。</p>
+<pre><code>curl -s -XDELETE &apos;localhost:9200/get-together &gt; /dev/null
+</code></pre><p>设置好mapping值后，通过以下命令可以看到所有已建立的数据库及配置生效情况</p>
+<pre><code>curl &apos;localhost:9200/_cat/indices?v&apos;
+</code></pre><p>####文档的新建，更新，删除</p>
+<h6 id="新建-index"><a href="#新建-index" class="headerlink" title="新建 index"></a>新建 index</h6><p>文档的新建和更新可以通过同一个index API,在response中会新增一个_version属性，代表当前的是新建的还是更新的文档。</p>
+<pre><code>curl -XPUT &apos;localhost:9200/index/type/id&apos; -d &apos;{...}&apos;
+</code></pre><p>上面的方法是会覆盖原来存在的文档，如果我们想要新建一个全新的文档，而不用担心覆盖已存在的文档。我们可以让elasticsearch自动为我们生成ID号，这时我们要使用POST方法(“store this document under this URL”).而不是PUT方法(“store this document at this URL”)。很容易可以看出PUT的url是固定的，而POST的url在type后面还有一个随机值。</p>
+<pre><code>curl -XPOST &apos;localhost:9200/index/type&apos; -d &apos;{...}&apos;
+</code></pre><p>但是如果我们想要使用自己的ID新建一个全新的文档呢？可以通过以下两种方法实现：</p>
+<pre><code>curl -XPUT &apos;localhost:9200/index/type/id?op_type=create&apos; -d &apos;{...}&apos;
+curl -XPUT &apos;localhost:9200/index/type/id/_create&apos; -d &apos;{...}&apos;
+</code></pre><h6 id="取文档-retrieve"><a href="#取文档-retrieve" class="headerlink" title="取文档 retrieve"></a>取文档 retrieve</h6><pre><code>curl -XGET &apos;localhost:9200/index/type/id?pretty&apos; 
+curl -XGET &apos;localhost:9200/index/type/id?_source=title,text 取某文档的特定字段
+curl -XGET &apos;localhost:9200/index/type/id/_source 返回的只有字段内容，没有元数据
+</code></pre><h4 id="更新-update"><a href="#更新-update" class="headerlink" title="更新 update"></a>更新 update</h4><p>除了使用index API </p>
+<pre><code>curl -XPUT &apos;localhost:9200/index/type/id&apos; -d &apos;{...}&apos;
+</code></pre><p>还可以使用update API 部分更新文档。通过一次请求完成更新文档所需要的所有操作——取文档，更新文档，重新建立文档，到后来的删除文档（再新建文档时删除，首先只是标记删除）<br>最简单的更新请求就是接受部分文档为doc参数，然后和文档合并，已存在的被覆盖，没有的新增</p>
+<pre><code>curl -XPOST &apos;localhost:9200/index/type/id/_update&apos; -d &apos;{
+    &quot;doc&quot;:{
+        &quot;tags&quot;:[&quot;testing&quot;],
+        &quot;views&quot;: 0
+        }
+}&apos;
+</code></pre><h4 id="删除-delete"><a href="#删除-delete" class="headerlink" title="删除 delete"></a>删除 delete</h4><pre><code>curl -XDELETE &apos;localhost:9200/index/type/id&apos;
+</code></pre><h4 id="冲突解决"><a href="#冲突解决" class="headerlink" title="冲突解决"></a>冲突解决</h4><h4 id="文档搜索"><a href="#文档搜索" class="headerlink" title="文档搜索"></a>文档搜索</h4><h6 id="搜索请求最基本的几个组件"><a href="#搜索请求最基本的几个组件" class="headerlink" title="搜索请求最基本的几个组件"></a>搜索请求最基本的几个组件</h6><p>当你选择对哪个数据库进行搜索的时候，你需要配置几个最基本的组件来决定你需要返回哪些条件的文档以及返回的数量等等。</p>
+<ol>
+<li>query<br>最重要的搜索请求组件，通过query DSL和filter DSL进行配置。</li>
+<li>size<br>返回的满足条件文档的数量</li>
+<li>from<br>和size搭配使用，通常用于分页。从满足条件文档的第几个开始返回。</li>
+<li>_source<br>设置_source字段如何返回。默认情况下是返回全部。注意不要在mappings设置里面disable _source字段</li>
+<li><p>sort<br>默认情况下返回的文档是按照得分高低进行排序，你可以通过sort设置自己的排序条件<br>完整的一个示例：</p>
+<p> curl ‘localhost:9200/index/type/_search’ -d ‘<br> {</p>
+<pre><code>&quot;query&quot;:{
+    &quot;match_all&quot;: {}
+},
+&quot;from&quot;: 0,
+&quot;size&quot;: 10,
+&quot;_source&quot;: [&quot;name&quot;,&quot;organizer&quot;,&quot;description&quot;],
+&quot;sort&quot;: [{&quot;created_on&quot;:&quot;desc&quot;}]
+</code></pre><p> }’</p>
+</li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/11/18/利用border属性生成三角形/" class="prev">PREV</a><a href="/2015/08/25/rvest-图书扒取/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

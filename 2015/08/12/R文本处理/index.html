@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R文本处理 · Hexo</title><meta name="description" content="R文本处理 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R文本处理</h1><div class="post-time">Aug 12, 2015</div><div class="post-content"><h4 id="1-字符串统计和字符翻译"><a href="#1-字符串统计和字符翻译" class="headerlink" title="1 字符串统计和字符翻译"></a>1 字符串统计和字符翻译</h4><p>1.1 nchar和length<br>nchar向量元素的字符个数，length向量长度（向量元素的个数）</p>
+<pre><code>x &lt;- c(&quot;Hellow&quot;, &quot;World&quot;, &quot;!&quot;);
+nchar(x) /6,5,1
+</code></pre><a id="more"></a>
+<pre><code>nchar(&quot;&quot;); /0
+length(&quot;&quot;); /1
+</code></pre><p>1.2 tolower,toupper和chartr</p>
+<pre><code>DNA &lt;- &quot;AtGCtttACC&quot; ;
+tolower(DNA); /&apos;atgctttacc&apos;
+toupper(DNA); /&apos;ATGCTTTACC&apos;    
+chartr(&quot;Tt&quot;,&quot;Uu&quot;,DNA); /&apos;AuGCuuuACC&apos;    
+chartr(&quot;Tt&quot;, &quot;UU&quot;, DNA); /&apos;AUGCUUUACC&apos;
+</code></pre><h4 id="2-字符串连接"><a href="#2-字符串连接" class="headerlink" title="2 字符串连接"></a>2 字符串连接</h4><p>2.1 paste函数<br>把向量连接成字串向量，较短的向量被循环使用。其他类型的数据会转换成向量</p>
+<pre><code>paste(&quot;CK&quot;, 1:6, sep = &quot;&quot;); /&quot;ck1&quot; &quot;ck2&quot; &quot;ck3&quot; &quot;ck4&quot; &quot;ck5&quot; &quot;ck6&quot;
+x &lt;- list(a = &quot;aaa&quot;, b = &quot;bbb&quot;, c = &quot;ccc&quot;);
+y &lt;- list(d = 1, e = 2);
+paste(x,y,sep = &quot;-&quot;); /&quot;aaa-1&quot; &quot;bbb-2&quot; &quot;ccc-1&quot;
+paste(x,y,collapse = &quot;;&quot;) /&quot;aaa 1;bbb 2;ccc 1&quot;
+</code></pre><h4 id="3-字符串拆分"><a href="#3-字符串拆分" class="headerlink" title="3 字符串拆分"></a>3 字符串拆分</h4><p>3.1 strsplit函数</p>
+<blockquote>
+<p>strsplit函数使用正则表达式，使用格式为:<br>    strsplit(x, split, fixed = FALSE, perl = FALSE, useBytes = FALSE)<br>    参数x为字串向量，每个元素都将单独进行拆分。<br>    参数split为拆分位置的字串向量，默认为正则表达式匹配（fixed=FALSE）。如果你没接触过正则表达式，设置fixed=TRUE，表示使用普通文本匹配或正则表达式的精确匹配。普通文本的运算速度快。<br>    perl=TRUE/FALSE的设置和perl语言版本有关，如果正则表达式很长，正确设置表达式并且使用perl=TRUE可以提高运算速度。<br>    参数useBytes设置是否逐个字节进行匹配，默认为FALSE，即按字符而不是字节进行匹配</p>
+</blockquote>
+<pre><code>text &lt;- &quot;Hello Adam!\nHello Ava!&quot;; 
+strsplit(text, &quot; &quot;);    /&quot;Hello&quot; &quot;Adam!\nHello&quot; &quot;Ava!&quot;
+strsplit(text, &quot;\\s&quot;);    /&quot;Hello&quot; &quot;Adam!&quot; &quot;Hello&quot; &quot;Ava!&quot;
+strsplit(text, &quot;&quot;);        /&quot;H&quot;  &quot;e&quot;  &quot;l&quot;  &quot;l&quot;  &quot;o&quot;  &quot; &quot;  &quot;A&quot;  &quot;d&quot;  &quot;a&quot;  &quot;m&quot;  &quot;!&quot;  &quot;\n&quot; &quot;H&quot;  &quot;e&quot;  &quot;l&quot;  &quot;l&quot;  &quot;o&quot;  &quot; &quot;  &quot;A&quot;  &quot;v&quot;  &quot;a&quot;  &quot;!&quot; 
+class(strsplit(text, &quot; &quot;));  /&quot;list&quot;
+class(text)  /&quot;character&quot;
+</code></pre><h4 id="4-字符串查询"><a href="#4-字符串查询" class="headerlink" title="4 字符串查询"></a>4 字符串查询</h4><p>4.1 grep 和 grepl函数<br>在正则表达式中匹配元字符本身，比如在文本中查找问号“?”， 那么就要使用引用符号（或称换码符号），一般是反斜杠 “\”。需要注意的是，在R语言中得用两个反斜杠</p>
+<pre><code>files&lt;-list.files(&quot;/home/..&quot;); 
+files;
+grep(&quot;\\.idx$&quot;,files); 
+grepl(&quot;\\.idx$&quot;, files)
+</code></pre><p>4.2 regexpr , gregexpr和regexec</p>
+<pre><code>text &lt;- c(&quot;Hellow, Adam!&quot;, &quot;Hi, Adam!&quot;, &quot;How are you, Adam.&quot;);
+regexpr(&quot;Adam&quot;, text);
+gregexpr(&quot;Adam&quot;,text);
+regexec(&quot;Adam&quot;,text)
+</code></pre><h4 id="5-字符串替换"><a href="#5-字符串替换" class="headerlink" title="5 字符串替换"></a>5 字符串替换</h4><p>5.1 sub和gsub函数<br>虽然sub和gsub是用于字符串替换的函数，但严格地说R语言没有字符串替换的函数，因为R语言不管什么操作对参数都是传值不传址</p>
+<pre><code>sub(pattern = &quot;Adam&quot;, replacement = &quot;world&quot;, text); / &quot;Hellow, world!&quot;      &quot;Hi, world!&quot;          &quot;How are you, world.&quot;
+sub(pattern = &quot;Adam|Hi&quot;, replacement = &quot;world&quot;, text); /&quot;Hellow, world!&quot;      &quot;world, Adam!&quot;        &quot;How are you, world.&quot;
+gsub(pattern = &quot;Adam|Hi&quot;, replacement = &quot;world&quot;, text) /&quot;Hellow, world!&quot;      &quot;world, world!&quot;       &quot;How are you, world.&quot;
+</code></pre><p>sub和gsub函数可以使用提取表达式（转义字符+数字）让部分变成全部。圆括号代表组，数字代表对应的组号</p>
+<pre><code>sub(pattern = &quot;.*(Hellow).*(Adam).*&quot;, replacement = &quot;\\1\\2&quot;, text)  / &quot;HellowAdam&quot;         &quot;Hi, Adam!&quot;          &quot;How are you, Adam.&quot;
+</code></pre><p>6 字符串提取</p>
+<h5 id="6-1-substr-和-substring-函数"><a href="#6-1-substr-和-substring-函数" class="headerlink" title="6.1 substr 和 substring 函数"></a>6.1 substr 和 substring 函数</h5><p>substr(x, start, stop)<br>substr返回的字串个数等于第一个参数的长度<br>而substring返回字串个数等于三个参数中最长向量长度，短向量循环使用</p>
+<pre><code>x &lt;- &quot;123456789&quot;;
+substr(x, c(2, 3), c(4, 5, 8));  /&quot;234&quot;
+substring(x, c(2, 3), c(4, 5, 8))  /&quot;234&quot; &quot;345&quot; &quot;2345678&quot;
+
+x &lt;- c(&quot;123456789&quot;, &quot;abcdefghijklmnopq&quot;);
+substr(x, c(2, 3), c(4, 5, 8))  /&quot;234&quot; &quot;cde&quot;
+
+DNA &lt;- &quot;GCAGCGCATATG&quot;;
+substring(DNA, seq(1, 10, by = 3), seq(3, 12, by = 3)) /&quot;GCA&quot; &quot;GCG&quot; &quot;CAT&quot; &quot;ATG&quot;
+</code></pre><h4 id="7-其他"><a href="#7-其他" class="headerlink" title="7 其他"></a>7 其他</h4><p>7.1 strtrim 函数</p>
+<pre><code>strtrim(c(&quot;abcdef&quot;, &quot;abcdef&quot;, &quot;abcdef&quot;), c(1, 5, 10))  /&quot;a&quot; &quot;abcde&quot; &quot;abcdef&quot;
+</code></pre><p>7.2 strwrap 函数<br>该函数把一个字符串当成一个段落的文字（不管字符串中是否有换行符），按照段落的格式（缩进和长度）和断字方式进行分行，每一行是结果中的一个字符串。例如：</p>
+<pre><code>str1 &lt;- &quot;Each character string in the input is first split into paragraphs\n(or lines containing whitespace only). The paragraphs are then\nformatted by breaking lines at word boundaries. The target\ncolumns for wrapping lines and the indentation of the first and\nall subsequent lines of a paragraph can be controlled\nindependently.&quot;;
+str2 &lt;- rep(str1, 2);
+str2;
+strwrap(str2, width = 80, indent = 2) s
+</code></pre><p>7.3 match 和 charmatch</p>
+<pre><code>match(&quot;xx&quot;, c(&quot;abc&quot;, &quot;xx&quot;, &quot;xxx&quot;, &quot;xx&quot;)) /2
+charmatch(&quot;xx&quot;, &quot;xx&quot;); /1
+charmatch(&quot;xx&quot;, &quot;xxa&quot;); /1 
+charmatch(&quot;xx&quot;, &quot;axx&quot;)  /NA
+</code></pre></div></article></div></section><footer><div class="paginator"><a href="/2015/08/13/R 数据处理/" class="prev">PREV</a><a href="/2015/08/11/R常用命令解析/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

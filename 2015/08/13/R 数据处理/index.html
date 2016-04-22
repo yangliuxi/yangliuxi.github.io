@@ -1,0 +1,164 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R数据处理 · Hexo</title><meta name="description" content="R数据处理 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R数据处理</h1><div class="post-time">Aug 13, 2015</div><div class="post-content"><h4 id="R-数据处理"><a href="#R-数据处理" class="headerlink" title="R 数据处理"></a>R 数据处理</h4><p>本节数据处理主要是针对data.frame数据结构，由最基本的方法到运用dplyr包，reshape包等对数据进行加工及运算。<br>下面通过具体实例学习R数据处理。</p>
+<p>这是三家公司的营收与利润数额。如果大家想一步步跟随本文进行尝试，那么请将下列内容输入（或者直接复制加粘贴）到自己的R终端窗口当中：</p>
+<pre><code>fy &lt;- c(2010,2011,2012,2010,2011,2012,2010,2011,2012);
+company &lt;- c(&quot;Apple&quot;,&quot;Apple&quot;,&quot;Apple&quot;,&quot;Google&quot;,&quot;Google&quot;,&quot;Google&quot;,&quot;Microsoft&quot;,&quot;Microsoft&quot;,&quot;Microsoft&quot;); 
+revenue &lt;- c(65225,108249,156508,29321,37905,50175,62484,69943,73723);  
+profit &lt;- c(14013,25922,41733,8505,9737,10737,18760,23150,16978);
+companiesData &lt;- data.frame(fy, company, revenue, profit);
+companiesData$fy &lt;- as.factor(companiesData$fy);
+companiesData;
+str(companiesData)
+</code></pre><a id="more"></a>
+<table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td></tr><br></tbody><br></table>
+
+
+
+
+<pre><code>&apos;data.frame&apos;:    9 obs. of  4 variables:
+ $ fy     : Factor w/ 3 levels &quot;2010&quot;,&quot;2011&quot;,..: 1 2 3 1 2 3 1 2 3
+ $ company: Factor w/ 3 levels &quot;Apple&quot;,&quot;Google&quot;,..: 1 1 1 2 2 2 3 3 3
+ $ revenue: num  65225 108249 156508 29321 37905 ...
+ $ profit : num  14013 25922 41733 8505 9737 ...
+</code></pre><h4 id="1-向现有数据框添加column"><a href="#1-向现有数据框添加column" class="headerlink" title="1 向现有数据框添加column"></a>1 向现有数据框添加column</h4><p>通过将利润除以营收再乘以100的方式添加一个“margin”（利润率）column：</p>
+<h6 id="1-1"><a href="#1-1" class="headerlink" title="1.1"></a>1.1</h6><pre><code>companiesData$margin &lt;- (companiesData$profit / companiesData$revenue)*100;
+companiesData;
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.48409</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.94664</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.66509</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29.00651</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.6879</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.3991</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30.02369</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.09838</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23.02945</td></tr><br></tbody><br></table>
+
+<pre><code>companiesData$margin &lt;- round(companiesData$margin, 1);
+companiesData;
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+<h6 id="1-2-transform-函数"><a href="#1-2-transform-函数" class="headerlink" title="1.2 transform 函数"></a>1.2 transform 函数</h6><pre><code>companiesData &lt;- transform(companiesData, margin = (profit/revenue) * 100);
+companiesData
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.48409</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.94664</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.66509</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29.00651</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.6879</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.3991</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30.02369</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.09838</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23.02945</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>companiesData &lt;- transform(companiesData, margin = round((profit/revenue) * 100, 1));
+companiesData
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+<h6 id="1-3-apply函数"><a href="#1-3-apply函数" class="headerlink" title="1.3 apply函数"></a>1.3 apply函数</h6><p>dataFrame$newColumn &lt;- apply(dataFrame, 1, function(x) { . . . } );<br>1代表对row应用函数，2代表对列应用函数</p>
+<pre><code>companiesData$margin &lt;- apply(companiesData[,c(&apos;revenue&apos;, &apos;profit&apos;)], 1, function(x) { (x[2]/x[1]) * 100 });
+companiesData
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.48409</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.94664</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.66509</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29.00651</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.6879</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.3991</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30.02369</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.09838</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23.02945</td></tr><br></tbody><br></table>
+
+
+<pre><code>companiesData$margin &lt;- mapply(function(x, y) round((x/y) * 100, 1)companiesData$profit, companiesData$revenue);
+companiesData
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>highestMargin &lt;- companiesData[companiesData$margin == max(companiesData$margin),];
+highestMargin
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br></tbody><br></table>
+
+<pre><code>highestMargin &lt;- subset(companiesData, margin==max(margin));
+highestMargin
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br></tbody><br></table>
+
+
+<pre><code>library(plyr);
+highestProfitMargins &lt;- ddply(companiesData, &apos;company&apos;, summarize, bestMargin = max(margin));
+highestProfitMargins
+</code></pre><table><br><thead><tr><th></th><th scope="col">company</th><th scope="col">bestMargin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>Apple</td><td>26.7</td></tr><br>    <tr><th scope="row">2</th><td>Google</td><td>29</td></tr><br>    <tr><th scope="row">3</th><td>Microsoft</td><td>33.1</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>myResults &lt;- ddply(companiesData, &apos;company&apos;, transform, highestMargin = max(margin), lowestMargin = min(margin));
+myResults
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th><th scope="col">highestMargin</th><th scope="col">lowestMargin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td><td>26.7</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td><td>26.7</td><td>21.5</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td><td>26.7</td><td>21.5</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td><td>29</td><td>21.4</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td><td>29</td><td>21.4</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td><td>29</td><td>21.4</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td><td>33.1</td><td>23</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td><td>33.1</td><td>23</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td><td>33.1</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>highestProfitMargins &lt;- ddply(companiesData, &apos;company&apos;, function(x) x[x$margin==max(x$margin),]);
+highestProfitMargins
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">2</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">3</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br></tbody><br></table>
+
+
+
+
+<h6 id="companiesData-companiesDate-margin-max-companiesData-margin"><a href="#companiesData-companiesDate-margin-max-companiesData-margin" class="headerlink" title="companiesData[companiesDate\$margin==max(companiesData$margin),];"></a>companiesData[companiesDate\$margin==max(companiesData$margin),];</h6><p>这部分代码本身并没有使用ddply()，因此得到的是最高全局利润率而非各公司最高利润率。不过由于匿名函数被加入到ddply()声明当中，而ddply()又已经按照公司名称对数据框进行了分割，所以返回的匹配行仍然符合按不同公司计算的要求。</p>
+<h6 id="要利用ddply-查看整个数据集中的最高利润率，而非根据公司category划分的子集，我们可以在第二个参数中输入NULL使分割factor变为无效："><a href="#要利用ddply-查看整个数据集中的最高利润率，而非根据公司category划分的子集，我们可以在第二个参数中输入NULL使分割factor变为无效：" class="headerlink" title="要利用ddply()查看整个数据集中的最高利润率，而非根据公司category划分的子集，我们可以在第二个参数中输入NULL使分割factor变为无效："></a>要利用ddply()查看整个数据集中的最高利润率，而非根据公司category划分的子集，我们可以在第二个参数中输入NULL使分割factor变为无效：</h6><pre><code>highestProfitMargin &lt;- ddply(companiesData, NULL, summarize, bestMargin = max(margin));
+highestProfitMargin
+</code></pre><table><br><thead><tr><th></th><th scope="col">.id</th><th scope="col">bestMargin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>NA</td><td>33.1</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>companiesOrdered &lt;- companiesData[order(-companiesData$margin),];
+companiesOrdered
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>companiesData[order(companiesData$fy, -companiesData$margin),];
+companiesData
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+
+<table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>library(reshape2);
+companiesLong &lt;- melt(companiesData, c(&quot;fy&quot;, &quot;company&quot;));
+companiesLong
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">variable</th><th scope="col">value</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>revenue</td><td>65225</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>revenue</td><td>108249</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>revenue</td><td>156508</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>revenue</td><td>29321</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>revenue</td><td>37905</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>revenue</td><td>50175</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>revenue</td><td>62484</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>revenue</td><td>69943</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>revenue</td><td>73723</td></tr><br>    <tr><th scope="row">10</th><td>2010</td><td>Apple</td><td>profit</td><td>14013</td></tr><br>    <tr><th scope="row">11</th><td>2011</td><td>Apple</td><td>profit</td><td>25922</td></tr><br>    <tr><th scope="row">12</th><td>2012</td><td>Apple</td><td>profit</td><td>41733</td></tr><br>    <tr><th scope="row">13</th><td>2010</td><td>Google</td><td>profit</td><td>8505</td></tr><br>    <tr><th scope="row">14</th><td>2011</td><td>Google</td><td>profit</td><td>9737</td></tr><br>    <tr><th scope="row">15</th><td>2012</td><td>Google</td><td>profit</td><td>10737</td></tr><br>    <tr><th scope="row">16</th><td>2010</td><td>Microsoft</td><td>profit</td><td>18760</td></tr><br>    <tr><th scope="row">17</th><td>2011</td><td>Microsoft</td><td>profit</td><td>23150</td></tr><br>    <tr><th scope="row">18</th><td>2012</td><td>Microsoft</td><td>profit</td><td>16978</td></tr><br>    <tr><th scope="row">19</th><td>2010</td><td>Apple</td><td>margin</td><td>21.5</td></tr><br>    <tr><th scope="row">20</th><td>2011</td><td>Apple</td><td>margin</td><td>23.9</td></tr><br>    <tr><th scope="row">21</th><td>2012</td><td>Apple</td><td>margin</td><td>26.7</td></tr><br>    <tr><th scope="row">22</th><td>2010</td><td>Google</td><td>margin</td><td>29</td></tr><br>    <tr><th scope="row">23</th><td>2011</td><td>Google</td><td>margin</td><td>25.7</td></tr><br>    <tr><th scope="row">24</th><td>2012</td><td>Google</td><td>margin</td><td>21.4</td></tr><br>    <tr><th scope="row">25</th><td>2010</td><td>Microsoft</td><td>margin</td><td>30</td></tr><br>    <tr><th scope="row">26</th><td>2011</td><td>Microsoft</td><td>margin</td><td>33.1</td></tr><br>    <tr><th scope="row">27</th><td>2012</td><td>Microsoft</td><td>margin</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>companiesLong &lt;- melt(companiesData, id.vars=c(&quot;fy&quot;, &quot;company&quot;),
+                  measure.vars=c(&quot;revenue&quot;, &quot;profit&quot;, &quot;margin&quot;),
+                  variable.name=&quot;financialCategory&quot;, value.name=&quot;amount&quot;);
+companiesLong
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">financialCategory</th><th scope="col">amount</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>revenue</td><td>65225</td></tr><br>    <tr><th scope="row">2</th><td>2011</td><td>Apple</td><td>revenue</td><td>108249</td></tr><br>    <tr><th scope="row">3</th><td>2012</td><td>Apple</td><td>revenue</td><td>156508</td></tr><br>    <tr><th scope="row">4</th><td>2010</td><td>Google</td><td>revenue</td><td>29321</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>revenue</td><td>37905</td></tr><br>    <tr><th scope="row">6</th><td>2012</td><td>Google</td><td>revenue</td><td>50175</td></tr><br>    <tr><th scope="row">7</th><td>2010</td><td>Microsoft</td><td>revenue</td><td>62484</td></tr><br>    <tr><th scope="row">8</th><td>2011</td><td>Microsoft</td><td>revenue</td><td>69943</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>revenue</td><td>73723</td></tr><br>    <tr><th scope="row">10</th><td>2010</td><td>Apple</td><td>profit</td><td>14013</td></tr><br>    <tr><th scope="row">11</th><td>2011</td><td>Apple</td><td>profit</td><td>25922</td></tr><br>    <tr><th scope="row">12</th><td>2012</td><td>Apple</td><td>profit</td><td>41733</td></tr><br>    <tr><th scope="row">13</th><td>2010</td><td>Google</td><td>profit</td><td>8505</td></tr><br>    <tr><th scope="row">14</th><td>2011</td><td>Google</td><td>profit</td><td>9737</td></tr><br>    <tr><th scope="row">15</th><td>2012</td><td>Google</td><td>profit</td><td>10737</td></tr><br>    <tr><th scope="row">16</th><td>2010</td><td>Microsoft</td><td>profit</td><td>18760</td></tr><br>    <tr><th scope="row">17</th><td>2011</td><td>Microsoft</td><td>profit</td><td>23150</td></tr><br>    <tr><th scope="row">18</th><td>2012</td><td>Microsoft</td><td>profit</td><td>16978</td></tr><br>    <tr><th scope="row">19</th><td>2010</td><td>Apple</td><td>margin</td><td>21.5</td></tr><br>    <tr><th scope="row">20</th><td>2011</td><td>Apple</td><td>margin</td><td>23.9</td></tr><br>    <tr><th scope="row">21</th><td>2012</td><td>Apple</td><td>margin</td><td>26.7</td></tr><br>    <tr><th scope="row">22</th><td>2010</td><td>Google</td><td>margin</td><td>29</td></tr><br>    <tr><th scope="row">23</th><td>2011</td><td>Google</td><td>margin</td><td>25.7</td></tr><br>    <tr><th scope="row">24</th><td>2012</td><td>Google</td><td>margin</td><td>21.4</td></tr><br>    <tr><th scope="row">25</th><td>2010</td><td>Microsoft</td><td>margin</td><td>30</td></tr><br>    <tr><th scope="row">26</th><td>2011</td><td>Microsoft</td><td>margin</td><td>33.1</td></tr><br>    <tr><th scope="row">27</th><td>2012</td><td>Microsoft</td><td>margin</td><td>23</td></tr><br></tbody><br></table>
+
+
+
+
+
+
+<pre><code>companiesWide &lt;- dcast(companiesLong, fy + company ~ financialCategory, value.var=&quot;amount&quot;);
+companiesWide
+</code></pre><table><br><thead><tr><th></th><th scope="col">fy</th><th scope="col">company</th><th scope="col">revenue</th><th scope="col">profit</th><th scope="col">margin</th></tr></thead><br><tbody><br>    <tr><th scope="row">1</th><td>2010</td><td>Apple</td><td>65225</td><td>14013</td><td>21.5</td></tr><br>    <tr><th scope="row">2</th><td>2010</td><td>Google</td><td>29321</td><td>8505</td><td>29</td></tr><br>    <tr><th scope="row">3</th><td>2010</td><td>Microsoft</td><td>62484</td><td>18760</td><td>30</td></tr><br>    <tr><th scope="row">4</th><td>2011</td><td>Apple</td><td>108249</td><td>25922</td><td>23.9</td></tr><br>    <tr><th scope="row">5</th><td>2011</td><td>Google</td><td>37905</td><td>9737</td><td>25.7</td></tr><br>    <tr><th scope="row">6</th><td>2011</td><td>Microsoft</td><td>69943</td><td>23150</td><td>33.1</td></tr><br>    <tr><th scope="row">7</th><td>2012</td><td>Apple</td><td>156508</td><td>41733</td><td>26.7</td></tr><br>    <tr><th scope="row">8</th><td>2012</td><td>Google</td><td>50175</td><td>10737</td><td>21.4</td></tr><br>    <tr><th scope="row">9</th><td>2012</td><td>Microsoft</td><td>73723</td><td>16978</td><td>23</td></tr><br></tbody><br></table>
+
+
+<p>dcast()会将long数据框的名称作为第一项参数。大家需要遵循以下语法创建公式来充当第二项参数：<br>id variables ~ variable variables<br>其中ID与measurement变量由波浪线隔开。如果波浪线两端的变量不止一个，那么各变量彼此之间要用“加号”分隔。<br>第三项参数用于让dcast()将包含measurement值的列名称分配给value.var。</p>
+<p>第二节将介绍data.table包，这是一个功能更加强大，速度更快的数据处理包。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/15/data.table语法解析（一）/" class="prev">PREV</a><a href="/2015/08/12/R文本处理/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>
