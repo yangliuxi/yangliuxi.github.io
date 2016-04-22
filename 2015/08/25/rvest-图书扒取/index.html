@@ -1,11 +1,16 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R-rvest网页数据爬取 · Hexo</title><meta name="description" content="R-rvest网页数据爬取 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R-rvest网页数据爬取</h1><div class="post-time">Aug 25, 2015</div><div class="post-content"><p>在网页数据爬取过程中，最容易遇到网页乱码问题，因此首先讲解如何解决这个问题：<br>用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的<br>stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。<br><a id="more"></a></p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R-rvest网页数据爬取 · 柳溪的个人博客</title><meta name="description" content="R-rvest网页数据爬取 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R-rvest网页数据爬取</h1><div class="post-time">Aug 25, 2015</div><div class="post-content"><p>在网页数据爬取过程中，有时候用rvest::read_html()读取网页的内容和我们直接分析页码的源代码不一样，或者直接就是乱码。这两个常见问题可能是由user agent和编码设置错误有关。关于编码的重新设置可以采用以下这种方法：<br>用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的<br>stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。<br><a id="more"></a></p>
 <pre><code>destfile&lt;-&apos;laocai&apos;
 download.file(&apos;http://....&apos;,destfile)
 fchar&lt;-readChar(destfile,file.info(destfile)$size,useBytes =TRUE)
 stringi::stri_enc_detect(fchar)
 fut&lt;-stringi::stri_encode(fchar,from=&apos;GB18030&apos;,to=&quot;UTF8&quot;,to_raw=FALSE)
-fhtml &lt;- rvest::html(fut)
+fhtml &lt;- rvest::read_html(fut)
 fhtml
+</code></pre><p>关于User Agent的设置，因为默认情况下，rvest的User Agent是curl/7.39.0 Rcurl/1.95.4.6 httr/0.6.1，而我们的浏览器User Agent类似于这样Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36，目标页面的HTTP服务器会检查是不是正常的浏览器访问请求。因此需要手动更改User Agent的设置。<br>rvest的read_html()函数的参数可以是三种形式：url,string,httr请求。我们可以通过httr请求设置User Agent.</p>
+<pre><code>read_html(httr::GET(&quot;https://www.baidu.com&quot;,user_agent(&quot;Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0&quot;)))
+</code></pre><p>更多httr请求的设置可以查阅httr包。我们也可以通过html_session(url,…)来模拟浏览器的对话。通过str()可以看到详细的请求和回应信息。</p>
+<pre><code>session&lt;-html_session(url,...)
+str(session)
 </code></pre><p>下面开始扒取图书网页内容</p>
 <pre><code>library(rvest)
 library(stringr)

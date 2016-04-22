@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> linux 管线命令 · 柳溪的个人博客</title><meta name="description" content="linux 管线命令 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">linux 管线命令</h1><div class="post-time">Mar 27, 2016</div><div class="post-content"><p>如果你想要得到的数据要经过很多道工序才能得出，那么就得用上管线命令了(pipe)，管线命令使用的是 | 这个符号。</p>
+<blockquote>
+<p>管线命令只能处理前面一个指令传来的正确信息，也就是standard output信息，不能处理standard error信息。<br>每个管线后面接的第一个数据必须是指令，并且是能接受标准输入的指令，只有这样才能称为管线命令。</p>
+</blockquote>
+<p>常用的管线命令有：</p>
+<pre><code>撷取命令: cut, grep
+排序命令: sort, wc, uniq
+双向重导向: tee
+字符转换命令: tr, col, join, paste, expand
+分割命令: split
+参数代换: xargs
+</code></pre><a id="more"></a>
+<p>撷取命令: cut, grep<br>cut是撷取一行的某段，grep是撷取符合条件的那些行。</p>
+<pre><code>cut -d&apos;分隔字符&apos; -f fields 
+cut -c 字符区间
+</code></pre><p>示例代码</p>
+<pre><code>echo $PATH | cut -d&apos;:&apos; -f5 取出用冒号分隔后的第5段
+export | cut -c 12- 取出第12个字符以后的内容
+last | cut -d&apos;&apos; -f1 取出空白符分割的第一段
+</code></pre><p>grep语法</p>
+<pre><code>grep [-acinv] [--color=auto] &apos;搜寻字符串&apos; filename
+last | grep &apos;root&apos; 将last当中，取出有root的那一行
+last | grep -v &apos;root&apos; 取出没有root的那一行
+last | grep &apos;root&apos; | cut -d&apos;&apos; -f1 取出root后，仅取第一栏
+</code></pre><p>排序命令: sort, wc, uniq<br>sort语法：</p>
+<pre><code>sort [-fbMnrtuk] [file or stdin]
+f :忽略大小写的差异,例如 A 与 a 视为编码相同;
+-b :忽略最前面的空格符部分;
+-M :以月份的名字来排序,例如 JAN, DEC 等等的排序方法;
+-n :使用『纯数字』进行排序(默认是以文字型态来排序的);
+-r :反向排序;
+-u :就是 uniq ,相同的数据中,仅出现一行代表;
+-t :分隔符,预设是用 [tab] 键来分隔，类似于cut命令的-d选项；
+-k :以那个区间 (field) 来进行排序的意思，类似于cut命令的-f选项
+</code></pre><p>示例代码</p>
+<pre><code>cat /etc/passwd | sort -t&apos;:&apos; -k3
+cat /etc/passwd | sort -t &apos;:&apos; -k 3 -n 以数字来排序
+</code></pre><p>uniq语法</p>
+<pre><code>uniq [-ic]
+-i :忽略大小写字符的不同;
+-c :进行计数
+</code></pre><p>示例代码</p>
+<pre><code>last | cut -d&apos;&apos; -f1 | sort | uniq
+last | cut -d&apos;&apos; -f1 | sort | uniq -c 列出每个人的登陆总数
+</code></pre><p>wc语法</p>
+<pre><code>wc [-lwm]
+-l :仅列出行;
+-w :仅列出多少字(英文单字);
+-m :多少字符；
+</code></pre><p>示例代码</p>
+<pre><code>cat /etc/man.config | wc
+last | grep [a-zA-Z] | grep -v &apos;wtmp&apos; | wc -l grep取出last中非空白行，及去除wtmp的那一行，然后统计行数，就可以了解登陆系统的总人数
+</code></pre></div></article></div></section><footer><div class="paginator"><a href="/2016/04/17/linux-sed/" class="prev">PREV</a><a href="/2016/01/08/svg-viewbox（二）/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>

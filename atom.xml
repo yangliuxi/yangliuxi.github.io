@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Hexo</title>
+  <title>柳溪的个人博客</title>
   
   <link href="/atom.xml" rel="self"/>
   
@@ -54,6 +54,91 @@ $ ./code-tra.sed &amp;lt;file&amp;gt;
     </summary>
     
       <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="linux" scheme="http://yoursite.com/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux 管线命令</title>
+    <link href="http://yoursite.com/2016/03/27/linux-%E7%AE%A1%E7%BA%BF%E5%91%BD%E4%BB%A4/"/>
+    <id>http://yoursite.com/2016/03/27/linux-管线命令/</id>
+    <published>2016-03-27T00:06:26.000Z</published>
+    <updated>2016-04-22T07:07:49.248Z</updated>
+    
+    <content type="html">&lt;p&gt;如果你想要得到的数据要经过很多道工序才能得出，那么就得用上管线命令了(pipe)，管线命令使用的是 | 这个符号。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;管线命令只能处理前面一个指令传来的正确信息，也就是standard output信息，不能处理standard error信息。&lt;br&gt;每个管线后面接的第一个数据必须是指令，并且是能接受标准输入的指令，只有这样才能称为管线命令。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;常用的管线命令有：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;撷取命令: cut, grep
+排序命令: sort, wc, uniq
+双向重导向: tee
+字符转换命令: tr, col, join, paste, expand
+分割命令: split
+参数代换: xargs
+&lt;/code&gt;&lt;/pre&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;撷取命令: cut, grep&lt;br&gt;cut是撷取一行的某段，grep是撷取符合条件的那些行。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cut -d&amp;apos;分隔字符&amp;apos; -f fields 
+cut -c 字符区间
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;示例代码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo $PATH | cut -d&amp;apos;:&amp;apos; -f5 取出用冒号分隔后的第5段
+export | cut -c 12- 取出第12个字符以后的内容
+last | cut -d&amp;apos;&amp;apos; -f1 取出空白符分割的第一段
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;grep语法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;grep [-acinv] [--color=auto] &amp;apos;搜寻字符串&amp;apos; filename
+last | grep &amp;apos;root&amp;apos; 将last当中，取出有root的那一行
+last | grep -v &amp;apos;root&amp;apos; 取出没有root的那一行
+last | grep &amp;apos;root&amp;apos; | cut -d&amp;apos;&amp;apos; -f1 取出root后，仅取第一栏
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;排序命令: sort, wc, uniq&lt;br&gt;sort语法：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sort [-fbMnrtuk] [file or stdin]
+f :忽略大小写的差异,例如 A 与 a 视为编码相同;
+-b :忽略最前面的空格符部分;
+-M :以月份的名字来排序,例如 JAN, DEC 等等的排序方法;
+-n :使用『纯数字』进行排序(默认是以文字型态来排序的);
+-r :反向排序;
+-u :就是 uniq ,相同的数据中,仅出现一行代表;
+-t :分隔符,预设是用 [tab] 键来分隔，类似于cut命令的-d选项；
+-k :以那个区间 (field) 来进行排序的意思，类似于cut命令的-f选项
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;示例代码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/passwd | sort -t&amp;apos;:&amp;apos; -k3
+cat /etc/passwd | sort -t &amp;apos;:&amp;apos; -k 3 -n 以数字来排序
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;uniq语法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uniq [-ic]
+-i :忽略大小写字符的不同;
+-c :进行计数
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;示例代码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;last | cut -d&amp;apos;&amp;apos; -f1 | sort | uniq
+last | cut -d&amp;apos;&amp;apos; -f1 | sort | uniq -c 列出每个人的登陆总数
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;wc语法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wc [-lwm]
+-l :仅列出行;
+-w :仅列出多少字(英文单字);
+-m :多少字符；
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;示例代码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/man.config | wc
+last | grep [a-zA-Z] | grep -v &amp;apos;wtmp&amp;apos; | wc -l grep取出last中非空白行，及去除wtmp的那一行，然后统计行数，就可以了解登陆系统的总人数
+&lt;/code&gt;&lt;/pre&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;如果你想要得到的数据要经过很多道工序才能得出，那么就得用上管线命令了(pipe)，管线命令使用的是 | 这个符号。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;管线命令只能处理前面一个指令传来的正确信息，也就是standard output信息，不能处理standard error信息。&lt;br&gt;每个管线后面接的第一个数据必须是指令，并且是能接受标准输入的指令，只有这样才能称为管线命令。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;常用的管线命令有：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;撷取命令: cut, grep
+排序命令: sort, wc, uniq
+双向重导向: tee
+字符转换命令: tr, col, join, paste, expand
+分割命令: split
+参数代换: xargs
+&lt;/code&gt;&lt;/pre&gt;
+    
+    </summary>
+    
+      <category term="配置" scheme="http://yoursite.com/categories/%E9%85%8D%E7%BD%AE/"/>
     
     
       <category term="linux" scheme="http://yoursite.com/tags/linux/"/>
@@ -714,16 +799,21 @@ curl -XGET &amp;apos;localhost:9200/index/type/id/_source 返回的只有字段�
     <link href="http://yoursite.com/2015/08/25/rvest-%E5%9B%BE%E4%B9%A6%E6%89%92%E5%8F%96/"/>
     <id>http://yoursite.com/2015/08/25/rvest-图书扒取/</id>
     <published>2015-08-25T00:06:26.000Z</published>
-    <updated>2016-04-21T23:07:38.571Z</updated>
+    <updated>2016-04-22T01:23:22.428Z</updated>
     
-    <content type="html">&lt;p&gt;在网页数据爬取过程中，最容易遇到网页乱码问题，因此首先讲解如何解决这个问题：&lt;br&gt;用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的&lt;br&gt;stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+    <content type="html">&lt;p&gt;在网页数据爬取过程中，有时候用rvest::read_html()读取网页的内容和我们直接分析页码的源代码不一样，或者直接就是乱码。这两个常见问题可能是由user agent和编码设置错误有关。关于编码的重新设置可以采用以下这种方法：&lt;br&gt;用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的&lt;br&gt;stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;destfile&amp;lt;-&amp;apos;laocai&amp;apos;
 download.file(&amp;apos;http://....&amp;apos;,destfile)
 fchar&amp;lt;-readChar(destfile,file.info(destfile)$size,useBytes =TRUE)
 stringi::stri_enc_detect(fchar)
 fut&amp;lt;-stringi::stri_encode(fchar,from=&amp;apos;GB18030&amp;apos;,to=&amp;quot;UTF8&amp;quot;,to_raw=FALSE)
-fhtml &amp;lt;- rvest::html(fut)
+fhtml &amp;lt;- rvest::read_html(fut)
 fhtml
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;关于User Agent的设置，因为默认情况下，rvest的User Agent是curl/7.39.0 Rcurl/1.95.4.6 httr/0.6.1，而我们的浏览器User Agent类似于这样Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36，目标页面的HTTP服务器会检查是不是正常的浏览器访问请求。因此需要手动更改User Agent的设置。&lt;br&gt;rvest的read_html()函数的参数可以是三种形式：url,string,httr请求。我们可以通过httr请求设置User Agent.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;read_html(httr::GET(&amp;quot;https://www.baidu.com&amp;quot;,user_agent(&amp;quot;Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0&amp;quot;)))
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;更多httr请求的设置可以查阅httr包。我们也可以通过html_session(url,…)来模拟浏览器的对话。通过str()可以看到详细的请求和回应信息。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;session&amp;lt;-html_session(url,...)
+str(session)
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;下面开始扒取图书网页内容&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;library(rvest)
 library(stringr)
@@ -766,7 +856,7 @@ writeLines(json_book,&amp;apos;mybook.json&amp;apos;)
     
     <summary type="html">
     
-      &lt;p&gt;在网页数据爬取过程中，最容易遇到网页乱码问题，因此首先讲解如何解决这个问题：&lt;br&gt;用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的&lt;br&gt;stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。&lt;br&gt;
+      &lt;p&gt;在网页数据爬取过程中，有时候用rvest::read_html()读取网页的内容和我们直接分析页码的源代码不一样，或者直接就是乱码。这两个常见问题可能是由user agent和编码设置错误有关。关于编码的重新设置可以采用以下这种方法：&lt;br&gt;用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的&lt;br&gt;stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。&lt;br&gt;
     
     </summary>
     
@@ -782,14 +872,14 @@ writeLines(json_book,&amp;apos;mybook.json&amp;apos;)
     <link href="http://yoursite.com/2015/08/16/data.table%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/"/>
     <id>http://yoursite.com/2015/08/16/data.table语法解析（二）/</id>
     <published>2015-08-16T04:54:26.000Z</published>
-    <updated>2016-04-21T23:04:58.210Z</updated>
+    <updated>2016-04-22T04:58:38.696Z</updated>
     
     <content type="html">&lt;pre&gt;&lt;code&gt;library(data.table)
 DT = data.table(a=LETTERS[c(1,1:3)],b=4:7,key=&amp;quot;a&amp;quot;)
 DT
-&lt;/code&gt;&lt;/pre&gt;&lt;table&gt;&lt;br&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;a&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;b&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;br&gt;&lt;tbody&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;1&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;2&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;3&lt;/th&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;4&lt;/th&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;&lt;/tbody&gt;&lt;br&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;table&gt;&lt;br&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;a&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;b&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;br&gt;&lt;tbody&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;1&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;2&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;3&lt;/th&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;4&lt;/th&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;&lt;/tbody&gt;&lt;br&gt;&lt;/table&gt;
 
-&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;p&gt;:= 通过引用的方式增加或者更新列&lt;br&gt;类似transform方法，但是更容易操作&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;DT &amp;lt;- data.table(a=rep(1:3, each=2), b=1:6)
 DT2 &amp;lt;- transform(DT, c = a^2)
@@ -1076,7 +1166,7 @@ Total: 6MB
       &lt;pre&gt;&lt;code&gt;library(data.table)
 DT = data.table(a=LETTERS[c(1,1:3)],b=4:7,key=&amp;quot;a&amp;quot;)
 DT
-&lt;/code&gt;&lt;/pre&gt;&lt;table&gt;&lt;br&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th scope=col&gt;a&lt;/th&gt;&lt;th scope=col&gt;b&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;br&gt;&lt;tbody&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=row&gt;1&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=row&gt;2&lt;/th&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=row&gt;3&lt;/th&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;    &lt;tr&gt;&lt;th scope=row&gt;4&lt;/th&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;&lt;/tbody&gt;&lt;br&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
     
     </summary>
     
@@ -1638,15 +1728,12 @@ nchar(x) /6,5,1
     <link href="http://yoursite.com/2015/08/11/R%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90/"/>
     <id>http://yoursite.com/2015/08/11/R常用命令解析/</id>
     <published>2015-08-11T04:54:26.000Z</published>
-    <updated>2016-04-21T06:26:32.054Z</updated>
+    <updated>2016-04-22T01:44:01.769Z</updated>
     
     <content type="html">&lt;p&gt;R是一门解释型语言。R的所有操作都是函数操作。&lt;br&gt;b&amp;lt;-1:5;会被解析为 assign(‘b’,seq(1:5))&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;p&gt;R 常用命令&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;search() 查看R启动时默认加载的7个核心包
-[1] &amp;quot;.GlobalEnv&amp;quot;        &amp;quot;package:stats&amp;quot;     &amp;quot;package:graphics&amp;quot;
-[4] &amp;quot;package:grDevices&amp;quot; &amp;quot;package:utils&amp;quot;     &amp;quot;package:datasets&amp;quot;
-[7] &amp;quot;package:methods&amp;quot;   &amp;quot;Autoloads&amp;quot;         &amp;quot;package:base&amp;quot;
-
 ls(),objects()查看当前环境中的变量
 paste() 把单独的字符连成字符串
 mode(),length() 对象内在属性：模式和长度
@@ -1655,42 +1742,21 @@ attr(object,name) 设置对象外部属性
 class() 对象的类属性
 cbind(),rbind() 列和行的合并
 table() 因子的频率
-methods(generic.function,class) 列出泛型函数所有可用方法，或者是列出类对象的可用泛型函数列表。如
-    methods(class=&amp;quot;data.frame&amp;quot;)，
-    methods(plot)
+methods(generic.function,class) 列出泛型函数所有可用方法，或者是列出类对象的可用泛型函数列表。如methods(class=&amp;quot;data.frame&amp;quot;)，methods(plot)
 str() 显示任意对象的内部结构
-options() 允许用户设置一些全局选项从而影响显示结果。
-    如 options(width=700)设置屏幕行容纳宽度
-&lt;/code&gt;&lt;/pre&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;p&gt;网页乱码问题&lt;br&gt;用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的&lt;br&gt;stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。&lt;br&gt;destfile&amp;lt;-‘laocaimin’&lt;br&gt; download.file(‘&lt;a href=&quot;http://www.678567.com/&amp;#39;,destfile&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.678567.com/&amp;#39;,destfile&lt;/a&gt;)&lt;br&gt;fchar&amp;lt;-readChar(destfile,file.info(destfile)$size,useBytes =TRUE)&lt;/p&gt;
-&lt;p&gt;stringi::stri_enc_detect(fchar)&lt;br&gt;fut&amp;lt;-stringi::stri_encode(fchar,from=’GB18030’,to=”UTF8”,to_raw=FALSE)&lt;/p&gt;
-&lt;p&gt;fhtml &amp;lt;- rvest::html(fut)&lt;br&gt;fhtml&lt;/p&gt;
-</content>
+options() 允许用户设置一些全局选项从而影响显示结果。如 options(width=700)设置屏幕行容纳宽度
+install.packages() 安装包
+updata.packages() 更新包。会把所有需要更新的包列出来，然后通过交互的方式更新你所需要的包。
+getwd() 列出当前工作目录
+setwd(&amp;quot;&amp;quot;) 设置当前工作目录
+save.image(objectlist, file=&amp;quot;myfile&amp;quot;) 保存当前工作环境
+load(&amp;quot;myfile&amp;quot;) 加载工作环境
+source(&amp;quot;&amp;quot;) 执行外部脚本文件
+&lt;/code&gt;&lt;/pre&gt;</content>
     
     <summary type="html">
     
       &lt;p&gt;R是一门解释型语言。R的所有操作都是函数操作。&lt;br&gt;b&amp;lt;-1:5;会被解析为 assign(‘b’,seq(1:5))&lt;/p&gt;
-&lt;p&gt;R 常用命令&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;search() 查看R启动时默认加载的7个核心包
-[1] &amp;quot;.GlobalEnv&amp;quot;        &amp;quot;package:stats&amp;quot;     &amp;quot;package:graphics&amp;quot;
-[4] &amp;quot;package:grDevices&amp;quot; &amp;quot;package:utils&amp;quot;     &amp;quot;package:datasets&amp;quot;
-[7] &amp;quot;package:methods&amp;quot;   &amp;quot;Autoloads&amp;quot;         &amp;quot;package:base&amp;quot;
-
-ls(),objects()查看当前环境中的变量
-paste() 把单独的字符连成字符串
-mode(),length() 对象内在属性：模式和长度
-attributes() 对象当前定义的非内在属性列表
-attr(object,name) 设置对象外部属性
-class() 对象的类属性
-cbind(),rbind() 列和行的合并
-table() 因子的频率
-methods(generic.function,class) 列出泛型函数所有可用方法，或者是列出类对象的可用泛型函数列表。如
-    methods(class=&amp;quot;data.frame&amp;quot;)，
-    methods(plot)
-str() 显示任意对象的内部结构
-options() 允许用户设置一些全局选项从而影响显示结果。
-    如 options(width=700)设置屏幕行容纳宽度
-&lt;/code&gt;&lt;/pre&gt;
     
     </summary>
     

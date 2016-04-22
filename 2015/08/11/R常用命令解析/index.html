@@ -1,10 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R 常用命令解析 · Hexo</title><meta name="description" content="R 常用命令解析 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/project" target="_self" class="nav-list-link">PROJECT</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R 常用命令解析</h1><div class="post-time">Aug 11, 2015</div><div class="post-content"><p>R是一门解释型语言。R的所有操作都是函数操作。<br>b&lt;-1:5;会被解析为 assign(‘b’,seq(1:5))</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> R 常用命令解析 · 柳溪的个人博客</title><meta name="description" content="R 常用命令解析 - John Doe"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"></head><body><div id="mask" style="display: none;"><img id="mask-image" src="#" style=" "></div><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="/resume" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">R 常用命令解析</h1><div class="post-time">Aug 11, 2015</div><div class="post-content"><p>R是一门解释型语言。R的所有操作都是函数操作。<br>b&lt;-1:5;会被解析为 assign(‘b’,seq(1:5))</p>
+<a id="more"></a>
 <p>R 常用命令</p>
 <pre><code>search() 查看R启动时默认加载的7个核心包
-[1] &quot;.GlobalEnv&quot;        &quot;package:stats&quot;     &quot;package:graphics&quot;
-[4] &quot;package:grDevices&quot; &quot;package:utils&quot;     &quot;package:datasets&quot;
-[7] &quot;package:methods&quot;   &quot;Autoloads&quot;         &quot;package:base&quot;
-
 ls(),objects()查看当前环境中的变量
 paste() 把单独的字符连成字符串
 mode(),length() 对象内在属性：模式和长度
@@ -13,14 +10,14 @@ attr(object,name) 设置对象外部属性
 class() 对象的类属性
 cbind(),rbind() 列和行的合并
 table() 因子的频率
-methods(generic.function,class) 列出泛型函数所有可用方法，或者是列出类对象的可用泛型函数列表。如
-    methods(class=&quot;data.frame&quot;)，
-    methods(plot)
+methods(generic.function,class) 列出泛型函数所有可用方法，或者是列出类对象的可用泛型函数列表。如methods(class=&quot;data.frame&quot;)，methods(plot)
 str() 显示任意对象的内部结构
-options() 允许用户设置一些全局选项从而影响显示结果。
-    如 options(width=700)设置屏幕行容纳宽度
-</code></pre><a id="more"></a>
-<p>网页乱码问题<br>用下载的函数（例如download.file）下载网页下来，然后读取出内容，用stringi扩展包中的<br>stri_enc_detect探测出字符串的编码，然后用string::stri_encode将原编码转换成为UTF8就可以了。<br>destfile&lt;-‘laocaimin’<br> download.file(‘<a href="http://www.678567.com/&#39;,destfile" target="_blank" rel="external">http://www.678567.com/&#39;,destfile</a>)<br>fchar&lt;-readChar(destfile,file.info(destfile)$size,useBytes =TRUE)</p>
-<p>stringi::stri_enc_detect(fchar)<br>fut&lt;-stringi::stri_encode(fchar,from=’GB18030’,to=”UTF8”,to_raw=FALSE)</p>
-<p>fhtml &lt;- rvest::html(fut)<br>fhtml</p>
-</div></article></div></section><footer><div class="paginator"><a href="/2015/08/12/R文本处理/" class="prev">PREV</a><a href="/2015/03/27/rem单位详解/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>
+options() 允许用户设置一些全局选项从而影响显示结果。如 options(width=700)设置屏幕行容纳宽度
+install.packages() 安装包
+updata.packages() 更新包。会把所有需要更新的包列出来，然后通过交互的方式更新你所需要的包。
+getwd() 列出当前工作目录
+setwd(&quot;&quot;) 设置当前工作目录
+save.image(objectlist, file=&quot;myfile&quot;) 保存当前工作环境
+load(&quot;myfile&quot;) 加载工作环境
+source(&quot;&quot;) 执行外部脚本文件
+</code></pre></div></article></div></section><footer><div class="paginator"><a href="/2015/08/12/R文本处理/" class="prev">PREV</a><a href="/2015/03/27/rem单位详解/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016 <a href="http://yoursite.com">John Doe</a>, unless otherwise noted.</p></div></footer></div><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?a36e15d9e2adec9a21fcdd9f686b1ed2";var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();</script><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/css/app.js"></script></body></html>
